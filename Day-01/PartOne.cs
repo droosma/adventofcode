@@ -15,7 +15,7 @@ namespace Day_01
         [InlineData(100756, 33583)]
         public void FromExample(int mass, int expectedFuelRequirements)
         {
-            var fuelRequirements = FuelCalculator.CalculateFuelRequirement(mass);
+            var fuelRequirements = FuelCalculator.ByMass(mass);
 
             fuelRequirements.Should().Be(expectedFuelRequirements);
         }
@@ -29,7 +29,7 @@ namespace Day_01
             var input = Utilities.EmbeddedResource.Get(resourceName, assembly);
             var fuelRequirements = input.Split(Environment.NewLine)
                 .Select(value => decimal.Parse(value))
-                .Select(mass => FuelCalculator.CalculateFuelRequirement(mass))
+                .Select(mass => FuelCalculator.ByMass(mass))
                 .Sum();
 
             fuelRequirements.Should().Be(3252897);
