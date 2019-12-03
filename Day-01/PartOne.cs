@@ -28,6 +28,7 @@ namespace Day_01
 
             var input = Utilities.EmbeddedResource.Get(resourceName, assembly);
             var fuelRequirements = input.Split(Environment.NewLine)
+                .AsParallel()
                 .Select(value => decimal.Parse(value))
                 .Select(mass => FuelCalculator.ByMass(mass))
                 .Sum();
