@@ -10,7 +10,7 @@ namespace Day_03
         private Point _center;
 
         private Graph(Point center, 
-                     List<Point> points)
+                      List<Point> points)
         {
             _points = points;
             _center = center;
@@ -24,6 +24,14 @@ namespace Day_03
 
         public IEnumerable<Point> Intersections(Graph graph) 
             => _points.Intersect(graph._points);
+
+        public int DistanceBetween(Point end)
+        {
+            var y = _points.IndexOf(end);
+            var steps = y + 1;
+
+            return steps;
+        }
 
         public Point Draw(Vector vector)
         {
