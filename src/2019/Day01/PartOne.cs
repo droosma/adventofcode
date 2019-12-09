@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Xunit;
 
-namespace Day_01
+namespace Day01
 {
     public class PartOne
     {

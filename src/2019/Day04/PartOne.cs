@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace Day_04
+namespace Day04
 {
     public class PartOne
     {

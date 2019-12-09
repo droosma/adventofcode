@@ -4,7 +4,7 @@ using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Day_05
+namespace Day05
 {
     public class PartOne
     {

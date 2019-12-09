@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Xunit;
 
-namespace Day_02
+namespace Day02
 {
     public class PartOne
     {

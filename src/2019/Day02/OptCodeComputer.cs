@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace Day_02
+namespace Day02
 {
     public static class OptCodeComputer
     {

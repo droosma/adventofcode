@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace Day_03
+namespace Day03
 {
     public class Graph
     {

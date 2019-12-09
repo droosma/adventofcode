@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Day_01
+namespace Day01
 {
     public static class FuelCalculator
     {

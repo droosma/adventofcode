@@ -1,20 +1,19 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using Xunit;
 
-namespace Day_03
+namespace Day03
 {
-    public class PartTwo
+    public class PartOne
     {
         [Theory]
-        [InlineData("R8,U5,L5,D3", "U7,R6,D4,L4", 30)]
-        [InlineData("R75,D30,R83,U83,L12,D49,R71,U7,L72", "U62,R66,U55,R34,D71,R55,D58,R83", 610)]
-        [InlineData("R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51", "U98,R91,D20,R16,D67,R40,U7,R15,U6,R7", 410)]
-        public void FromExample(string inputOne, 
-                                string inputTwo, 
-                                int expectedResult)
+        [InlineData("R8,U5,L5,D3", "U7,R6,D4,L4", 6)]
+        [InlineData("R75,D30,R83,U83,L12,D49,R71,U7,L72", "U62,R66,U55,R34,D71,R55,D58,R83", 159)]
+        [InlineData("R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51", "U98,R91,D20,R16,D67,R40,U7,R15,U6,R7", 135)]
+        public void FromExample(string inputOne, string inputTwo, int expectedResult)
         {
             var center = Point.Create(0, 0, ' ');
 
@@ -32,15 +31,12 @@ namespace Day_03
                 graphTwo.Draw(vector);
             }
 
-            var minDistance = graphOne.Intersections(graphTwo)
-                                      .Select(intersection =>
-            {
-                var distanceGraphOne = graphOne.DistanceBetween(intersection);
-                var distanceGraphTwo = graphTwo.DistanceBetween(intersection);
-                return distanceGraphOne + distanceGraphTwo;
-            }).Min();
+            File.WriteAllText("output-one", graphOne.ToString());
+            File.WriteAllText("output-two", graphTwo.ToString());
 
-            minDistance.Should().Be(expectedResult);
+            var intersections = graphOne.Intersections(graphTwo);
+            var manhattanDistance = intersections.Select(i => i.DistanceTo(center)).Min();
+            manhattanDistance.Should().Be(expectedResult);
         }
 
         [Fact]
@@ -71,15 +67,9 @@ namespace Day_03
                 graphTwo.Draw(vector);
             }
 
-            var minDistance = graphOne.Intersections(graphTwo)
-                                      .Select(intersection =>
-                                      {
-                                          var distanceGraphOne = graphOne.DistanceBetween(intersection);
-                                          var distanceGraphTwo = graphTwo.DistanceBetween(intersection);
-                                          return distanceGraphOne + distanceGraphTwo;
-                                      }).Min();
-
-            minDistance.Should().Be(101956);
+            var intersections = graphOne.Intersections(graphTwo);
+            var manhattanDistance = intersections.Select(i => i.DistanceTo(center)).Min();
+            manhattanDistance.Should().Be(5357);
         }
     }
 }

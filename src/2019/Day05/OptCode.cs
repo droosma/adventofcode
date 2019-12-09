@@ -1,4 +1,4 @@
-﻿namespace Day_05
+﻿namespace Day05
 {
     public class OptCode
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace Day_05
+namespace Day05
 {
     public class OptCodeComputer
     {

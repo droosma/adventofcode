@@ -2,7 +2,7 @@
 using System.Text;
 using Xunit.Abstractions;
 
-namespace Day_05
+namespace Day05
 {
     public class InMemoryComputationRecorder
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Day_03
+namespace Day03
 {
     public class Point
     {

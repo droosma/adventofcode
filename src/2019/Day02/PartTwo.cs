@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Day_02
+namespace Day02
 {
     public class PartTwo
     {
