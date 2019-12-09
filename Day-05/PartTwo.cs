@@ -11,7 +11,8 @@ namespace Day_05
 
         public PartTwo(ITestOutputHelper output)
         {
-            _optCodeComputer = new OptCodeComputer(output, 5);
+            var recorder = InMemoryComputationRecorder.ToTestOutputHelper(output);
+            _optCodeComputer = new OptCodeComputer(recorder, 5);
         }
 
         [Fact]

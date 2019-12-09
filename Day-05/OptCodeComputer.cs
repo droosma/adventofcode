@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Linq;
-using Xunit.Abstractions;
 
 namespace Day_05
 {
     public class OptCodeComputer
     {
-        private readonly ITestOutputHelper _output;
+        private readonly InMemoryComputationRecorder _recorder;
         private readonly int _input;
 
-        public OptCodeComputer(ITestOutputHelper output, int input)
+        public OptCodeComputer(InMemoryComputationRecorder recorder, int input)
         {
-            _output = output;
+            _recorder = recorder;
             _input = input;
         }
 
@@ -33,7 +32,7 @@ namespace Day_05
 
             int Compute(ref int[] source, int index)
             {
-                _output.WriteLine($"iteration: {++iteration}");
+                iteration++;
 
                 var instructionCode = source.Skip(index).First();
                 var optCode = new OptCode(instructionCode);
@@ -57,130 +56,141 @@ namespace Day_05
                 else if (optCode.Instruction == equals)
                     return index + Equals(optCode, ref source, index);
 
+                _recorder.Failure(optCode);
                 throw new Exception("program flaw detected");
             }
 
             int Multiplication(OptCode optCode, ref int[] source, int index)
             {
-                var noun = optCode.FirstParameterIsPositionMode
+                var firstParameter = optCode.FirstParameterIsPositionMode
                     ? source[source[index + 1]]
                     : source[index + 1];
-                var verb = optCode.SecondParameterIsPositionMode
+                var secondParameter = optCode.SecondParameterIsPositionMode
                     ? source[source[index + 2]]
                     : source[index + 2];
                 var destination = optCode.ThirdParameterIsPositionMode
                     ? source[index + 3]
                     : source[source[index + 3]];
 
-                var result = noun * verb;
+                var result = firstParameter * secondParameter;
                 source[destination] = result;
 
-                _output.WriteLine($"Index: {index} - Multiplication - {noun} * {verb} = {result} @ {destination}");
+                _recorder.Multiplication(index, optCode, firstParameter, secondParameter, result, destination);
 
                 return 4;
             }
             int Addition(OptCode optCode, ref int[] source, int index)
             {
-                var noun = optCode.FirstParameterIsPositionMode
+                var firstParameter = optCode.FirstParameterIsPositionMode
                     ? source[source[index + 1]]
                     : source[index + 1];
-                var verb = optCode.SecondParameterIsPositionMode
+                var secondParameter = optCode.SecondParameterIsPositionMode
                     ? source[source[index + 2]]
                     : source[index + 2];
                 var destination = optCode.ThirdParameterIsPositionMode
                     ? source[index + 3]
                     : source[source[index + 3]];
 
-                var result = noun + verb;
+                var result = firstParameter + secondParameter;
                 source[destination] = result;
 
-                _output.WriteLine($"Index: {index} - Addition - {noun} + {verb} = {result} @ {destination}");
+                _recorder.Addition(index, optCode, firstParameter, secondParameter, result, destination);
 
                 return 4;
             }
             int Input(ref int[] source, int index)
             {
-                var destination = source[index + 1];
+                var firstParameter = source[index + 1];
 
                 int userInput = _input;
-                source[destination] = userInput;
+                source[firstParameter] = userInput;
+
+                _recorder.Input(index, firstParameter, userInput);
+
                 return 2;
             }
             int Output(ref int[] source, int index)
             {
-                var value = source[index + 1];
-                _output.WriteLine($"Requested value @ {index + 1}: {value}");
+                var valueIndex = index + 1;
+                var value = source[valueIndex];
+
+                _recorder.Output(index, valueIndex, value);
 
                 return 2;
             }
             int JumpIfTrue(OptCode optCode, ref int[] source, int index)
             {
-                var value = optCode.FirstParameterIsPositionMode
+                var firstParameter = optCode.FirstParameterIsPositionMode
                     ? source[source[index + 1]]
                     : source[index + 1];
-                var destination = optCode.SecondParameterIsPositionMode
+                var secondParameter = optCode.SecondParameterIsPositionMode
                     ? source[source[index + 2]]
                     : source[index + 2];
 
                 int result;
-                if (value != 0)
-                    result = destination;
+                if (firstParameter != 0)
+                    result = secondParameter;
                 else
                     result = index + 3;
 
-                _output.WriteLine($"Jump if true value {value} with result : {result}");
+                _recorder.JumpIfTrue(index, optCode, firstParameter, secondParameter, result);
+
                 return result;
             }
             int JumpIfFalse(OptCode optCode, ref int[] source, int index)
             {
-                var value = optCode.FirstParameterIsPositionMode
+                var firstParameter = optCode.FirstParameterIsPositionMode
                     ? source[source[index + 1]]
                     : source[index + 1];
-                var destination = optCode.SecondParameterIsPositionMode
+                var secondParameter = optCode.SecondParameterIsPositionMode
                     ? source[source[index + 2]]
                     : source[index + 2];
 
                 int result;
-                if (value == 0)
-                    result = destination;
+                if (firstParameter == 0)
+                    result = secondParameter;
                 else
                     result = index + 3;
 
-                _output.WriteLine($"Jump if false value {value} with result : {result}");
+                _recorder.JumpIfFalse(index, optCode, firstParameter, secondParameter, result);
                 return result;
             }
             int LessThan(OptCode optCode, ref int[] source, int index)
             {
-                var first = optCode.FirstParameterIsPositionMode
+                var firstParameter = optCode.FirstParameterIsPositionMode
                     ? source[source[index + 1]]
                     : source[index + 1];
-                var second = optCode.SecondParameterIsPositionMode
+                var secondParameter = optCode.SecondParameterIsPositionMode
                     ? source[source[index + 2]]
                     : source[index + 2];
-                var destination = optCode.ThirdParameterIsPositionMode
+                var thirdParameter = optCode.ThirdParameterIsPositionMode
                     ? source[index + 3]
                     : source[source[index + 3]];
 
-                source[destination] = first < second ? 1 : 0;
+                var result = firstParameter < secondParameter ? 1 : 0;
+                source[thirdParameter] = result;
 
-                _output.WriteLine($"LessThan first: {first} second : {second} destination: {destination} result: {source[destination]}");
+                _recorder.LessThan(index, optCode, firstParameter, secondParameter, thirdParameter, result);
+
                 return 4;
             }
             int Equals(OptCode optCode, ref int[] source, int index)
             {
-                var first = optCode.FirstParameterIsPositionMode
+                var firstParameter = optCode.FirstParameterIsPositionMode
                     ? source[source[index + 1]]
                     : source[index + 1];
-                var second = optCode.SecondParameterIsPositionMode
+                var secondParameter = optCode.SecondParameterIsPositionMode
                     ? source[source[index + 2]]
                     : source[index + 2];
-                var destination = optCode.ThirdParameterIsPositionMode
+                var thirdParameter = optCode.ThirdParameterIsPositionMode
                     ? source[index + 3]
                     : source[source[index + 3]];
 
-                source[destination] = first == second ? 1 : 0;
+                var result = firstParameter == secondParameter ? 1 : 0;
+                source[thirdParameter] = result;
 
-                _output.WriteLine($"LessThan first: {first} second : {second} destination: {destination} result: {source[destination]}");
+                _recorder.Equals(index, optCode, firstParameter, secondParameter, thirdParameter, result);
+
                 return 4;
             }
         }
