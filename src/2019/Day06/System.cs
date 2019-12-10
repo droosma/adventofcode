@@ -7,6 +7,7 @@ namespace Day06
 {
     public class System
     {
+        public System Parent { get; private set; }
         public Entity Center { get; }
         private readonly IList<System> _satellites;
         public IEnumerable<System> Satellites => _satellites;
@@ -40,6 +41,35 @@ namespace Day06
             return 0;
         }
 
+        public System Find(Entity center)
+        {
+            if (Center.Equals(center))
+                return this;
+
+            foreach (var satellite in _satellites)
+            {
+                var path = satellite.Find(center);
+                if (path != null)
+                    return path;
+            }
+
+            return null;
+        }
+
+        public static List<Entity> Path(System system,
+                                        List<Entity> path = null)
+        {
+            if (path == null)
+                path = new List<Entity>();
+
+            if (system.Parent == null)
+                return path;
+
+            path.Add(system.Center);
+
+            return Path(system.Parent, path);
+        }
+
         public override string ToString()
         {
             var builder = new StringBuilder();
@@ -67,7 +97,9 @@ namespace Day06
                 Parallel.ForEach(orbits.Where(o => o.Center.Equals(center))
                                        .Distinct(), os =>
                                        {
-                                           localSystem.With(Construct(os.Satellite));
+                                           var newSystem = Construct(os.Satellite);
+                                           newSystem.Parent = localSystem; // bah
+                                           localSystem.With(newSystem);
                                        });
 
                 return localSystem;
