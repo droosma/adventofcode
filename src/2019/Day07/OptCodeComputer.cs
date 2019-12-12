@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Day07
@@ -62,7 +61,7 @@ namespace Day07
                 }
 
                 _recorder.Failure(optCode);
-                throw new Exception("program flaw detected");
+                throw ProgramFailure.Create(optCode, index);
             }
 
             int Addition(OptCode optCode, int index)
@@ -108,7 +107,7 @@ namespace Day07
                 var firstParameter = Memory[index + 1];
 
                 if(_inputCounter >= _inputs.Count())
-                    throw new Exception("input requested that has not been provided");
+                    throw InputNotProvided.Create(index);
 
                 int userInput = _inputs[_inputCounter];
                 _inputCounter++;

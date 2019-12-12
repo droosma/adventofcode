@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,11 +10,11 @@ namespace Day07
 {
     public class PartOne
     {
-        private readonly ITestOutputHelper outputHelper;
+        private readonly ITestOutputHelper _outputHelper;
 
         public PartOne(ITestOutputHelper outputHelper)
         {
-            this.outputHelper = outputHelper;
+            _outputHelper = outputHelper;
         }
 
         [Theory]
@@ -56,8 +55,8 @@ namespace Day07
             var x = inputs.Where(i => i.signal > 0).ToList();
 
             var maxSignal = x.Max(b => b.signal);
-            outputHelper.WriteLine(maxSignal.ToString());
-            outputHelper.WriteLine(string.Join(Environment.NewLine, x.Select(b => $"{b.combination} - {b.signal}")));
+            _outputHelper.WriteLine(maxSignal.ToString());
+            _outputHelper.WriteLine(string.Join(Environment.NewLine, x.Select(b => $"{b.combination} - {b.signal}")));
 
             static IEnumerable<int[]> GenerateInput() 
                 => Enumerable.Range(0, 100000)
@@ -66,7 +65,7 @@ namespace Day07
                              .ToArray());
         }
 
-        private static int Compute(int[] combination, int[] program)
+        private int Compute(int[] combination, int[] program)
         {
             try
             {
@@ -107,8 +106,9 @@ namespace Day07
 
                 return ampEComputer.Output;
             }
-            catch (Exception)
+            catch (InputNotProvided ex) 
             {
+                _outputHelper.WriteLine(ex.Message);
                 return 0;
             }
         }
