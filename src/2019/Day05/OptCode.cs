@@ -3,7 +3,7 @@
     public class OptCode
     {
         private readonly string _code;
-        public int Instruction { get; }
+        public InstructionType Type { get; }
         public bool FirstParameterIsPositionMode { get; }
         public bool SecondParameterIsPositionMode { get; }
         public bool ThirdParameterIsPositionMode { get; }
@@ -16,7 +16,7 @@
             var input = code.ToString(format);
             _code = input;
 
-            Instruction = int.Parse(input.Substring(3, 2));
+            Type = (InstructionType)int.Parse(input.Substring(3, 2));
             FirstParameterIsPositionMode = input[2].ToString() == "0" ? true : false;
             SecondParameterIsPositionMode = input[1].ToString() == "0" ? true : false;
             ThirdParameterIsPositionMode = input[0].ToString() == "0" ? true : false;

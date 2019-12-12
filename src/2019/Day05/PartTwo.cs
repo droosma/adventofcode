@@ -1,17 +1,19 @@
-﻿using System.Linq;
+﻿using FluentAssertions;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Day05
 {
     public class PartTwo
     {
+        private readonly IList<InstructionLog> _instructions = new List<InstructionLog>();
         private readonly OptCodeComputer _optCodeComputer;
 
-        public PartTwo(ITestOutputHelper output)
+        public PartTwo()
         {
-            var recorder = InMemoryComputationRecorder.ToTestOutputHelper(output);
+            var recorder = _instructions.ToComputationRecorder();
             _optCodeComputer = new OptCodeComputer(recorder, 5);
         }
 
@@ -28,6 +30,10 @@ namespace Day05
                               .ToArray();
 
             _optCodeComputer.Output(ref memory);
+
+            var output = _instructions.First(i => i.Type == InstructionType.output);
+
+            output.Output.Should().Contain("4283952");
         }
     }
 }

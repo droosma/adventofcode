@@ -13,7 +13,7 @@ namespace Day05
 
         public PartOne(ITestOutputHelper output)
         {
-            var recorder = InMemoryComputationRecorder.ToTestOutputHelper(output);
+            var recorder = output.ToComputationRecorder();
             _optCodeComputer = new OptCodeComputer(recorder, 1);
             this.output = output;
         }
@@ -25,11 +25,21 @@ namespace Day05
             const int input = 99;
             int[] expectedResult = new int[] { 3, 2, input };
 
-            var recorder = InMemoryComputationRecorder.ToTestOutputHelper(output);
+            var recorder = output.ToComputationRecorder();
             var optComputer = new OptCodeComputer(recorder, input);
             optComputer.Output(ref sequence);
 
             sequence.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [Fact]
+        public void Output()
+        {
+            int[] sequence = new int[] { 4, 1, 99 };
+
+            var recorder = output.ToComputationRecorder();
+            var optComputer = new OptCodeComputer(recorder, 1);
+            optComputer.Output(ref sequence);
         }
 
         [Fact]

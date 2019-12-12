@@ -5,24 +5,14 @@ namespace Day05
 {
     public class OptCodeComputer
     {
-        private readonly InMemoryComputationRecorder _recorder;
+        private readonly ComputationRecorder _recorder;
         private readonly int _input;
 
-        public OptCodeComputer(InMemoryComputationRecorder recorder, int input)
+        public OptCodeComputer(ComputationRecorder recorder, int input)
         {
             _recorder = recorder;
             _input = input;
         }
-
-        const int exit = 99;
-        const int add = 1;
-        const int multiply = 2;
-        const int input = 3;
-        const int output = 4;
-        const int jumpIfTrue = 5;
-        const int jumpIfFalse = 6;
-        const int lessThan = 7;
-        const int equals = 8;
 
         public void Output(ref int[] source)
         {
@@ -37,24 +27,27 @@ namespace Day05
                 var instructionCode = source.Skip(index).First();
                 var optCode = new OptCode(instructionCode);
 
-                if (optCode.Instruction == exit)
-                    return -1;
-                else if (optCode.Instruction == add)
-                    return index + Addition(optCode, ref source, index);
-                else if (optCode.Instruction == multiply)
-                    return index + Multiplication(optCode, ref source, index);
-                else if (optCode.Instruction == input)
-                    return index + Input(ref source, index);
-                else if (optCode.Instruction == output)
-                    return index + Output(ref source, index);
-                else if (optCode.Instruction == jumpIfTrue)
-                    return JumpIfTrue(optCode, ref source, index);
-                else if (optCode.Instruction == jumpIfFalse)
-                    return JumpIfFalse(optCode, ref source, index);
-                else if (optCode.Instruction == lessThan)
-                    return index + LessThan(optCode, ref source, index);
-                else if (optCode.Instruction == equals)
-                    return index + Equals(optCode, ref source, index);
+                switch (optCode.Type)
+                {
+                    case InstructionType.exit:
+                        return -1;
+                    case InstructionType.Addition:
+                        return index + Addition(optCode, ref source, index);
+                    case InstructionType.Multiplication:
+                        return index + Multiplication(optCode, ref source, index);
+                    case InstructionType.input:
+                        return index + Input(ref source, index);
+                    case InstructionType.output:
+                        return index + Output(optCode, ref source, index);
+                    case InstructionType.jumpIfTrue:
+                        return JumpIfTrue(optCode, ref source, index);
+                    case InstructionType.jumpIfFalse:
+                        return JumpIfFalse(optCode, ref source, index);
+                    case InstructionType.lessThan:
+                        return index + LessThan(optCode, ref source, index);
+                    case InstructionType.equals:
+                        return index + Equals(optCode, ref source, index);
+                }
 
                 _recorder.Failure(optCode);
                 throw new Exception("program flaw detected");
@@ -109,12 +102,14 @@ namespace Day05
 
                 return 2;
             }
-            int Output(ref int[] source, int index)
+            int Output(OptCode optCode, ref int[] source, int index)
             {
                 var valueIndex = index + 1;
-                var value = source[valueIndex];
+                var firstParameter = optCode.FirstParameterIsPositionMode
+                    ? source[source[valueIndex]]
+                    : source[valueIndex];
 
-                _recorder.Output(index, valueIndex, value);
+                _recorder.Output(index, valueIndex, firstParameter);
 
                 return 2;
             }

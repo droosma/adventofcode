@@ -1,29 +1,24 @@
 ﻿using System;
 using System.Text;
-using Xunit.Abstractions;
 
 namespace Day05
 {
-    public class InMemoryComputationRecorder
+
+    public class ComputationRecorder
     {
-        private readonly Action<string> _output;
+        private readonly Action<InstructionType, int, string> _output;
         private int _count = 0;
 
-        private void Record(StringBuilder builder)
+        private void Record(InstructionType type, StringBuilder builder)
         {
             _count++;
-            _output.Invoke($"command: {_count}{Environment.NewLine}{builder}");
+            _output.Invoke(type, _count, builder.ToString());
         }
 
-        private InMemoryComputationRecorder(Action<string> output)
+        internal ComputationRecorder(Action<InstructionType, int, string> output)
         {
             _output = output;
         }
-
-        public static InMemoryComputationRecorder ToConsole 
-            => new InMemoryComputationRecorder(toOutput => Console.WriteLine(toOutput));
-        public static InMemoryComputationRecorder ToTestOutputHelper(ITestOutputHelper helper) 
-            => new InMemoryComputationRecorder(toOutput => helper.WriteLine(toOutput));
 
         public void Addition(int index, OptCode optCode, int firstParameter, int secondParameter, int result, int destination)
         {
@@ -39,7 +34,7 @@ namespace Day05
             var modeThird = optCode.ThirdParameterIsPositionMode ? "position" : "immediate";
             builder.AppendLine($"Result: {result} @ index {destination} [Mode:{modeThird}]");
 
-            Record(builder);
+            Record(InstructionType.Addition, builder);
         }
 
         public void Equals(int index, OptCode optCode, int firstParameter, int secondParameter, int thirdParameter, int result)
@@ -57,7 +52,7 @@ namespace Day05
             var modeThird = optCode.ThirdParameterIsPositionMode ? "position" : "immediate";
             builder.AppendLine($"Result: {result} @ index {thirdParameter} [Mode:{modeThird}]");
 
-            Record(builder);
+            Record(InstructionType.equals, builder);
         }
 
         public void Failure(OptCode optCode)
@@ -66,18 +61,17 @@ namespace Day05
 
             builder.AppendLine($"Failed to execute program {optCode}");
 
-            Record(builder);
+            Record(InstructionType.Fault, builder);
         }
 
         public void Initialize(int[] source)
         {
             var builder = new StringBuilder();
 
-            Record(builder);
             builder.AppendLine($"Initializing");
             builder.AppendLine(string.Join(',', source));
 
-            Record(builder);
+            Record(InstructionType.Initialize, builder);
         }
 
         public void Input(int index, int firstParameter, int userInput)
@@ -88,7 +82,7 @@ namespace Day05
             builder.AppendLine($"First: {firstParameter}");
             builder.AppendLine($"Set {userInput} @ index {firstParameter}");
 
-            Record(builder);
+            Record(InstructionType.input, builder);
         }
 
         public void JumpIfFalse(int index, OptCode optCode, int firstParameter, int secondParameter, int result)
@@ -105,7 +99,7 @@ namespace Day05
 
             builder.AppendLine($"Result: index {result}");
 
-            Record(builder);
+            Record(InstructionType.jumpIfFalse, builder);
         }
 
         public void JumpIfTrue(int index, OptCode optCode, int firstParameter, int secondParameter, int result)
@@ -122,7 +116,7 @@ namespace Day05
 
             builder.AppendLine($"Result: index {result}");
 
-            Record(builder);
+            Record(InstructionType.jumpIfTrue, builder);
         }
 
         public void LessThan(int index, OptCode optCode, int firstParameter, int secondParameter, int thirdParameter, int result)
@@ -140,7 +134,7 @@ namespace Day05
             var modeThird = optCode.ThirdParameterIsPositionMode ? "position" : "immediate";
             builder.AppendLine($"Result: {result} @ index {thirdParameter} [Mode:{modeThird}]");
 
-            Record(builder);
+            Record(InstructionType.lessThan, builder);
         }
 
         public void Multiplication(int index, OptCode optCode, int firstParameter, int secondParameter, int result, int destination)
@@ -157,7 +151,7 @@ namespace Day05
             var modeThird = optCode.ThirdParameterIsPositionMode ? "position" : "immediate";
             builder.AppendLine($"Result: {result} @ index {destination} [Mode:{modeThird}]");
 
-            Record(builder);
+            Record(InstructionType.Multiplication, builder);
         }
 
         public void Output(int index, int valueIndex, int value)
@@ -167,7 +161,7 @@ namespace Day05
             builder.AppendLine($"Output on Index {index}");
             builder.AppendLine($"Value: {value} @ index {valueIndex}");
 
-            Record(builder);
+            Record(InstructionType.output, builder);
         }
     }
 }
