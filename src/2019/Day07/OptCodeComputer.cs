@@ -12,11 +12,15 @@ namespace Day07
         public int Output { get; private set; }
         public int[] Memory { get; }
 
+        public OptCodeComputer(int[] memory)
+        {
+            Memory = memory;
+        }
+
         public OptCodeComputer(ComputationRecorder recorder, 
-                               int[] memory)
+                               int[] memory) : this(memory)
         {
             _recorder = recorder;
-            Memory = memory;
         }
 
         public OptCodeComputer WithInput(int input)
@@ -25,7 +29,7 @@ namespace Day07
             return this;
         }
 
-        public void Calculate()
+        public void Execute()
         {
             var index = 0;
             var iteration = 0;
@@ -79,7 +83,7 @@ namespace Day07
                 var result = firstParameter + secondParameter;
                 Memory[destination] = result;
 
-                _recorder.Addition(index, optCode, firstParameter, secondParameter, result, destination);
+                _recorder?.Addition(index, optCode, firstParameter, secondParameter, result, destination);
 
                 return 4;
             }
@@ -98,7 +102,7 @@ namespace Day07
                 var result = firstParameter * secondParameter;
                 Memory[destination] = result;
 
-                _recorder.Multiplication(index, optCode, firstParameter, secondParameter, result, destination);
+                _recorder?.Multiplication(index, optCode, firstParameter, secondParameter, result, destination);
 
                 return 4;
             }
@@ -113,7 +117,7 @@ namespace Day07
                 _inputCounter++;
                 Memory[firstParameter] = userInput;
 
-                _recorder.Input(index, firstParameter, userInput);
+                _recorder?.Input(index, firstParameter, userInput);
 
                 return 2;
             }
@@ -124,7 +128,7 @@ namespace Day07
                     ? Memory[Memory[valueIndex]]
                     : Memory[valueIndex];
 
-                _recorder.Output(index, valueIndex, firstParameter);
+                _recorder?.Output(index, valueIndex, firstParameter);
                 this.Output = firstParameter;
                 return 2;
             }
@@ -143,7 +147,7 @@ namespace Day07
                 else
                     result = index + 3;
 
-                _recorder.JumpIfTrue(index, optCode, firstParameter, secondParameter, result);
+                _recorder?.JumpIfTrue(index, optCode, firstParameter, secondParameter, result);
 
                 return result;
             }
@@ -162,7 +166,7 @@ namespace Day07
                 else
                     result = index + 3;
 
-                _recorder.JumpIfFalse(index, optCode, firstParameter, secondParameter, result);
+                _recorder?.JumpIfFalse(index, optCode, firstParameter, secondParameter, result);
                 return result;
             }
             int LessThan(OptCode optCode, int index)
@@ -180,7 +184,7 @@ namespace Day07
                 var result = firstParameter < secondParameter ? 1 : 0;
                 Memory[thirdParameter] = result;
 
-                _recorder.LessThan(index, optCode, firstParameter, secondParameter, thirdParameter, result);
+                _recorder?.LessThan(index, optCode, firstParameter, secondParameter, thirdParameter, result);
 
                 return 4;
             }
@@ -199,7 +203,7 @@ namespace Day07
                 var result = firstParameter == secondParameter ? 1 : 0;
                 Memory[thirdParameter] = result;
 
-                _recorder.Equals(index, optCode, firstParameter, secondParameter, thirdParameter, result);
+                _recorder?.Equals(index, optCode, firstParameter, secondParameter, thirdParameter, result);
 
                 return 4;
             }
